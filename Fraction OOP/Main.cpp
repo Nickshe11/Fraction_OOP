@@ -108,13 +108,13 @@ public:
 		else if (Integer == 0) cout << Num << "/" << Denum << endl;
 		else cout << Integer << " " << Num << "/" << Denum << endl;
 	}
-	
+
 	Fraction correction() //метод для проверки неправильности дроби после арифметических выражений
 	{
-		if (Num < Denum) return *this;
+		if (Num * Num < Denum * Denum) return *this;
 		else
 		{
-			this->Integer = Integer+Num / Denum;
+			this->Integer = Integer + Num / Denum;
 			this->Num = Num % Denum;
 		}
 		return *this;
@@ -150,9 +150,26 @@ Fraction operator+ (const Fraction& first, int x)//сложение с целы�
 Fraction operator+ (const Fraction& first, double x)//сложение с десятичной дробью
 {
 	Fraction res;
-	res.set_Integer(first.get_Integer() + (int) x);
+	res.set_Integer(first.get_Integer() + (int)x);
 	res.set_Num(first.get_Num() * 100 + (int)((x - (int)x) * 100) * first.get_Denum());
 	res.set_Denum(first.get_Denum() * 100);
+	return res;
+}
+
+Fraction operator-(const Fraction& first, const Fraction& second)
+{
+	Fraction res;
+	if (first.get_Denum() == second.get_Denum())
+	{
+		res.set_Num((first.get_Integer() * first.get_Denum() + first.get_Num()) - (second.get_Integer() * second.get_Denum() + second.get_Num()));
+		res.set_Denum(first.get_Denum());
+	}
+	else
+	{
+		res.set_Num((first.get_Integer() * first.get_Denum() + first.get_Num()) * second.get_Denum() - (second.get_Integer() * second.get_Denum() + second.get_Num()) * first.get_Denum());
+		res.set_Denum(first.get_Denum() * second.get_Denum());
+	}
+	res.correction();
 	return res;
 }
 
@@ -190,6 +207,14 @@ bool operator<=(const Fraction& first, const Fraction& second)
 	else return first.get_Integer() <= second.get_Integer();
 }
 
+ostream& operator<<(ostream& os, const Fraction& obj)
+{
+	if (obj.get_Integer() == 0)
+		os << obj.get_Num() << "/" << obj.get_Denum();
+	else
+		os << obj.get_Integer() << " " << obj.get_Num() << "/" << obj.get_Denum();
+	return os;
+}
 
 void main()
 {
@@ -199,26 +224,35 @@ void main()
 	Fraction B = A;
 	B.print();
 	cout << delimiter << endl;
-	cout << "Перевод в десятичную дробь: " <<endl << A.Decimal() << endl;
+	cout << "Перевод в десятичную дробь:" << endl << A << " = " << A.Decimal() << endl;
+	cout << delimiter << endl;
 
 	cout << "Сложение объектов-дробей" << endl;
 	Fraction C = A + B;
-	C.print();
+	cout << A << " + " << B << " = " << C << endl;
 	cout << delimiter << endl;
 
-	cout << "Сложение объекта и целого числа"<< endl;
-	C = C + 2;
-	C.print();
+	cout << "Сложение объекта и целого числа" << endl;
+	cout << C << " + 2" << endl;
+	cout << C + 2 << endl;
+	//C.print();
 	cout << delimiter << endl;
 
-	cout << "Сложение объекта и десятичной дроби" << endl;
-	C = C + 2.456;
-	C.print();
+	cout << "Сложение объекта и десятичной дроби (округление до сотых)" << endl;
+	cout << C << " + 2.456" << endl;
+	cout << C + 2.456 << endl;
+	//C.print();
 	cout << delimiter << endl;
 
 	cout << "Умножение объектов-дробей" << endl;
-	C = B * A;
-	C.print();
+	cout << B << " * " << A << endl;
+	cout << B * A << endl;
+	//C.print();
 	cout << delimiter << endl;
 
+	cout << "Вычитание объектов-дробей" << endl;
+	Fraction E = A + B;
+	cout << E << " - " << A << endl;
+	cout << E - A << endl;
+	cout << delimiter << endl;
 }
